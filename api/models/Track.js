@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const trackSchema = new Schema({
-    trekName: {
+    trackName: {
         type: String,
         unique: true,
         required: true

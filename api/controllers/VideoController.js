@@ -12,6 +12,7 @@ export default class VideoController extends Controller {
     getTracks = async (req, res) => {
         try {
             const tracks = await Track.find();
+            res.set({ 'Content-Disposition': 'inline' });
             return res.json({ success: true, response: tracks });
         } catch (e) {
             return res.json({ success: false, response: e });
@@ -32,11 +33,11 @@ export default class VideoController extends Controller {
         });
     }
 
-    convertVideo = async ({ query }, res) => {
+    convertVideo = async ({ body }, res) => {
         try {
-            const response = await this.downloadMp3(query.url);
+            const response = await this.downloadMp3(body.url);
             const video = new Track({
-                trekName: this.cutFilename(response)
+                trackName: this.cutFilename(response)
             });
             video.save();
             return res.json({ success: true, response: video });
