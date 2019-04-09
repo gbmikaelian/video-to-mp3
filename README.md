@@ -3,7 +3,7 @@
 
 
 ## Installation
-Use: yarn and npm
+Use: yarn or npm
 
 Step 1:  open terminal and go to "./api" directory and run this command 
 ```bash
