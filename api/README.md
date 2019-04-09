@@ -13,6 +13,8 @@ npm start
 
 Your host http://localhost:3000.
 
+create .env file, set db name and port 
+
 ## Advanced
 
 # auto fix
