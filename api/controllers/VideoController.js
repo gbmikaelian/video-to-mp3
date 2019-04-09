@@ -11,24 +11,28 @@ export default class VideoController extends Controller {
 
     getTracks = async (req, res) => {
         try {
-            const tracks = await Track.find();
-            res.set({ 'Content-Disposition': 'inline' });
+            const tracks = await Track.find().sort('-createdAt');
             return res.json({ success: true, response: tracks });
         } catch (e) {
             return res.json({ success: false, response: e });
         }
     };
 
-    cutFilename = (filename) => {
-        return filename[4].replace('[ffmpeg] Destination: ', '');
+    changeFormat = (filename) => {
+        let format = filename.split('.');
+        format = format[format.length - 1];
+        return filename.replace(format, 'mp3');
     };
 
     downloadMp3 = (url) => {
         return new Promise((resolve, reject) => {
             const pathToSave = path.resolve(__dirname, this.trackFolder);
-            youtubeDl.exec(url, ['-x', '--audio-format', 'mp3'], { cwd: pathToSave }, function (err, response) {
+            youtubeDl.getInfo(url, (err, info) => {
                 if (err) reject(err);
-                resolve(response);
+                    youtubeDl.exec(url, ['-x', '--audio-format', 'mp3'], { cwd: pathToSave }, (err) => {
+                        if (err) reject(err);
+                        resolve(info);
+                    });
             });
         });
     }
@@ -37,7 +41,7 @@ export default class VideoController extends Controller {
         try {
             const response = await this.downloadMp3(body.url);
             const video = new Track({
-                trackName: this.cutFilename(response)
+                trackName: this.changeFormat(response._filename)
             });
             video.save();
             return res.json({ success: true, response: video });

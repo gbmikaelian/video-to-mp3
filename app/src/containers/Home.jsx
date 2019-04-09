@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { Base64 } from 'js-base64';
 
 import Grid from '@material-ui/core/Grid';
 import TableBody from '@material-ui/core/TableBody';
@@ -74,7 +75,10 @@ class Home extends Component {
         this.setState({
             url: ''
         });
-        
+    }
+
+    base64Path = (row) => {
+        return `${this.props.apiBaseUrl}/tracks/${row.trackName}`;
     }
 
     setInputValue = name => e => {
@@ -82,7 +86,7 @@ class Home extends Component {
     }
 
     render() {
-        const {tracks, addTrackReducer, apiBaseUrl, classes} = this.props;
+        const {tracks, addTrackReducer, classes} = this.props;
         return (
             <Grid container className={classes.root}>
                 <Grid item xs={12}>
@@ -97,7 +101,7 @@ class Home extends Component {
                                         <TableHead>
                                             <TableRow>
                                                 <CustomTableCell>
-                                                    track Name
+                                                    Track Name
                                                 </CustomTableCell>
                                                 <CustomTableCell>
                                                     Action
@@ -105,24 +109,6 @@ class Home extends Component {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {
-                                                tracks.map(row => (
-                                                    <TableRow className={classes.row} key={row._id}>
-                                                        <CustomTableCell component="th" scope="row">
-                                                            <div className={classes.frameBlock}>
-                                                                <span> 
-                                                                    {row.trackName}
-                                                                </span>
-                                                            </div>
-                                                        </CustomTableCell>
-                                                        <CustomTableCell>
-                                                            <Button color="primary">
-                                                                <a className={classes.inline} href={`${apiBaseUrl}/tracks/${row.trackName}`}>Download</a>
-                                                            </Button>
-                                                        </CustomTableCell>
-                                                    </TableRow>
-                                                ))
-                                            }
                                             <TableRow className={classes.row} key="create">
                                                 <CustomTableCell component="th" scope="row">
                                                     <TextField
@@ -146,6 +132,29 @@ class Home extends Component {
                                                     }
                                                 </CustomTableCell>
                                             </TableRow>
+                                            {
+                                                tracks.map(row => (
+                                                    <TableRow className={classes.row} key={row._id}>
+                                                        <CustomTableCell component="th" scope="row">
+                                                            <div className={classes.frameBlock}>
+                                                                <span> 
+                                                                    {row.trackName}
+                                                                </span>
+                                                            </div>
+                                                        </CustomTableCell>
+                                                        <CustomTableCell>
+                                                            <Button color="primary">
+                                                                <a
+                                                                    className={classes.inline}
+                                                                    download={this.base64Path(row)}
+                                                                    href={`data:application/octet-stream;base64,${Base64.encode(this.base64Path(row))}`}>
+                                                                    Download
+                                                                </a>
+                                                            </Button>
+                                                        </CustomTableCell>
+                                                    </TableRow>
+                                                ))
+                                            }
                                         </TableBody>
                                     </Table>
                                 </Paper>
